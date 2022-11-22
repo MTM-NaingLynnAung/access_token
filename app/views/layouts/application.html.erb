@@ -14,7 +14,8 @@
 
   <body>
   <div class="container">
-    <p><%= flash[:notice] %></p>
+    <%= render 'shared/navbar' %>
+    <%= render 'shared/flash' %>
     <%= yield %>
   </div>
 

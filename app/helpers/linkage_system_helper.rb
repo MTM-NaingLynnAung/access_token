@@ -1,0 +1,2 @@
+module LinkageSystemHelper
+end

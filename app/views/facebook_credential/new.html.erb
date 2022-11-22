@@ -1,0 +1,12 @@
+<%= form_with url: get_token_path, local: true do |form| %>
+
+  <div class="col-3 my-3">
+    <%= form.label 'App id' %>
+    <%= form.text_field :app_id, class: "form-control" %>
+  </div>
+  <div class="col-3">
+    <%= form.label :app_secret %>
+    <%= form.text_field :app_secret, class: 'form-control' %>
+  </div>
+  <%= form.submit 'Get Token', class: 'btn btn-primary mt-2' %>
+<% end %>

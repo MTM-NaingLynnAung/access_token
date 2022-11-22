@@ -5,6 +5,5 @@ class FacebookCredential < ApplicationRecord
       credential.app_secret = params['app_secret']
     end
   end
-  validates :app_id, presence: true 
-  validates :app_secret, presence: true
+
 end

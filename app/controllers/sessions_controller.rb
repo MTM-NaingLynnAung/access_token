@@ -1,30 +1,19 @@
 class SessionsController < ApplicationController
-
+  before_action :user_exist?, only: [:new]
+  skip_before_action :authorized?
   def new
 
   end
   def create
-    
-      session[:credential] = nil
-      credential = FacebookCredential.from_omniauth(params)
-      session[:credential] = credential.id
-      url = "https://www.facebook.com/dialog/oauth?client_id=#{params[:app_id]}&redirect_uri=http://localhost:3000/success"
-      
-      request = Typhoeus::Request.new(url, followlocation: true)
-      
-      request.on_complete do |response|
-        
-        if response.success?
-          # hell yeah
-          puts '-------------------success--------------------'
-          redirect_to request.base_url
-        else
-          # Received a non-successful http response.
-          puts ("-----------------failure-----------------")
-          render :new
-        end
-      end
-      request.run
+    user = User.find_by(email: params[:email])
+    if user && user.authenticate(params[:password])
+      session[:user_id] = user.id
+      redirect_to users_path, notice: 'Login successful'
+    else
+      flash[:alert] = 'Email or Password incorrect'
+      render :new, status: :unprocessable_entity
+    end
+
 
 
       # hydra = Typhoeus::Hydra.new
@@ -47,7 +36,7 @@ class SessionsController < ApplicationController
       
   end
   def destroy
-    session[:credential] = nil
+    session[:user_id] = nil
     redirect_to root_path, notice: "Logout successful"
   end
 end
