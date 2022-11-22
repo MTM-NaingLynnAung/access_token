@@ -13,6 +13,6 @@ Rails.application.routes.draw do
   post "/get_token", to: 'facebook_credential#create'
   get 'success', to: 'home#index'
   
-
+  resources :linkage_systems
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
 end

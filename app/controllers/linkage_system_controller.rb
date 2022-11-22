@@ -1,2 +1,0 @@
-class LinkageSystemController < ApplicationController
-end

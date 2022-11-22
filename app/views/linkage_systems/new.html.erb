@@ -1,0 +1,16 @@
+<h3 class="text-center">External Service Parameters</h3>
+<%= form_with url: linkage_systems_path(definition: params[:definition]), local: true do |form| %>
+  <div class="col-3 my-3">
+    <%= form.label 'Label' %>
+    <%= form.text_field :label, class: "form-control" %>
+  </div>
+<% @params_definition.each do |params_definition| %>
+  <div class="col-3 my-3">
+    <%= form.label "#{params_definition.name}" %>
+    <%= form.text_field params_definition.key, class: "form-control" %>
+  </div>
+<% end %>
+<%= form.submit 'Confirm', class: 'btn btn-primary mt-2' %>
+
+<% end %>
+
