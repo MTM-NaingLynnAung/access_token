@@ -1,3 +1,3 @@
 class LinkageSystem < ApplicationRecord
-  has_one :external_service
+  has_one :external_service, :dependent => :destroy
 end
