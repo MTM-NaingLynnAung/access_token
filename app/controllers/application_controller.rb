@@ -2,6 +2,23 @@ class ApplicationController < ActionController::Base
   before_action :authorized?
   helper_method :current_user, :crypt, :current_external_service, :credentials
   
+  # def current_label
+  #   session[:label]
+  # end
+
+  # def current_app_id
+  #   session[:app_id]
+  # end
+
+  # def current_app_secret
+  #   session[:app_secret]
+  # end
+
+  # def current_definition
+  #   session[:definition]
+  # end
+
+
   def current_external_service
     @external_service ||= ExternalService.find_by(id: session[:external_service]) if session[:external_service]
   end

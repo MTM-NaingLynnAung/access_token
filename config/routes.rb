@@ -11,7 +11,7 @@ Rails.application.routes.draw do
 
   get '/get_token', to: 'facebook_credential#new'
   post "/get_token", to: 'facebook_credential#create'
-  get 'success', to: 'home#index'
+  get 'store', to: 'linkage_systems#store'
   
   resources :linkage_systems
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
