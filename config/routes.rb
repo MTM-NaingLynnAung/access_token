@@ -1,7 +1,4 @@
 Rails.application.routes.draw do
-  # match '/auth/:provider/callback', to: 'sessions#create', via: :all
-  # match 'auth/failure', to: redirect('/'), via: :all
-  # match '/signout', to: 'sessions#destroy', :as => :signout, via: :all
 
   root to: 'sessions#new'
   post '/login', to: 'sessions#create'
@@ -9,8 +6,6 @@ Rails.application.routes.draw do
   resources :users
   resources :sessions, only: [:new, :create, :destroy]
 
-  get '/get_token', to: 'facebook_credential#new'
-  post "/get_token", to: 'facebook_credential#create'
   get 'store', to: 'linkage_systems#store'
   
   resources :linkage_systems
