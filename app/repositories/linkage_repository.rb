@@ -30,12 +30,16 @@ class LinkageRepository
       end
     end
 
-    def get_auth_code(id)
-      FacebookApiGateway.get_auth_code(id)
+    def get_auth_code(id, redirect_uri)
+      FacebookApiGateway.get_auth_code(id, redirect_uri)
     end
 
-    def store(current_user, session, crypt, credentials, params, id)
-      access_token = FacebookApiGateway.get_access_token(credentials, params)
+    def get_access_token(credentials, params, redirect_uri)
+      access_token = FacebookApiGateway.get_access_token(credentials, params, redirect_uri)
+    end
+
+    def store(current_user, session, crypt, credentials, params, id, redirect_uri)
+      access_token = FacebookApiGateway.get_access_token(credentials, params, redirect_uri)
       session[:"#{id}"] = access_token.token
       linkage = LinkageSystem.create!(
         label: session[:label],

@@ -20,12 +20,16 @@ class LinkageService
       LinkageRepository.set_credentials(credentials, params_definition, session)
     end
 
-    def get_auth_code(id)
-      LinkageRepository.get_auth_code(id)
+    def get_auth_code(id, redirect_uri)
+      LinkageRepository.get_auth_code(id, redirect_uri)
     end
 
-    def store(current_user, session, crypt, credentials, params, id)
-      linkage = LinkageRepository.store(current_user, session, crypt, credentials, params, id)
+    def get_access_token(credentials, params, redirect_uri)
+      LinkageRepository.get_access_token(credentials, params, redirect_uri)
+    end
+
+    def store(current_user, session, crypt, credentials, params, id, redirect_uri)
+      linkage = LinkageRepository.store(current_user, session, crypt, credentials, params, id, redirect_uri)
     end
   end
 end

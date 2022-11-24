@@ -7,6 +7,7 @@
   <div class="card-body">
     <p class="card-text"><%= linkage.description %></p>
    <%= link_to 'Create token', new_linkage_system_path(definition: linkage.id), class: 'btn btn-outline-primary' %>
+   <%= link_to 'Update', edit_linkage_system_path(linkage, definition: linkage.id), class: 'btn btn-outline-secondary' %>
   </div>
 </div>
 <% end %>

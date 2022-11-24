@@ -1,16 +1,20 @@
-<%= form_with url: linkage_systems_path, local: true do |form| %>
+<%= form_with url: url, method: method, local: true do |form| %>
 
   <div class="col-3 my-3">
     <%= form.label 'Label' %>
-    <%= form.text_field :label, class: "form-control" %>
+    <%= form.text_field :label, class: "form-control", value: params[:id].present? ? @external_service.linkage_system.label : '' %>
   </div>
-  <div class="col-3 my-3">
-    <%= form.label 'App id' %>
-    <%= form.text_field :app_id, class: "form-control" %>
-  </div>
-  <div class="col-3">
-    <%= form.label :app_secret %>
-    <%= form.text_field :app_secret, class: 'form-control' %>
-  </div>
-  <%= form.submit 'Get Token', class: 'btn btn-primary mt-2' %>
+
+<% @params_definition.each do |params_definition| %>
+  <% if params_definition.is_displayed != 0 %>
+    <div class="col-3 my-3">
+      <%= form.label "#{params_definition.name}" %>
+      <%= form.text_field params_definition.id, class: "form-control", value: params[:id].present? ? params_definition.is_encrypted == 0 ? params_definition.external_service_parameter.parameter_value : crypt.decrypt_and_verify(params_definition.external_service_parameter.parameter_value) : '' %>
+    </div>
+  <% end %>
+<% end %>
+
+<%= link_to 'Back', back, class: 'btn btn-dark me-2' %>
+<%= form.submit 'Confirm', class: 'btn btn-primary' %>
+
 <% end %>
