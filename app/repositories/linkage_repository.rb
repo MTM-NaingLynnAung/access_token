@@ -14,6 +14,7 @@ class LinkageRepository
         session[:"#{params_id.id}"] = nil
       end
     session[:definition] = nil
+    session[:linkage_id] = nil
     end
 
     def set_session(params_definition, session, params)
@@ -22,6 +23,7 @@ class LinkageRepository
       end
       session[:label] = params[:label]
       session[:definition] = params[:definition]
+      session[:linkage_id] = params[:id]
     end
 
     def set_credentials(credentials, params_definition, session)
@@ -61,5 +63,45 @@ class LinkageRepository
         )
       end
     end
+
+    def list(params)
+      ExternalService.where(external_service_definition_id: params)
+    end
+
+    def service_name(id)
+      ExternalServiceDefinition.find_by(id: id)
+    end
+
+    def find_external_service(id)
+      ExternalService.find_by(linkage_system_id: id)
+    end
+
+    def update(external_service, label, crypt, exist_params, input_params, params)
+      external_service.linkage_system.update(label: label)
+      external_service.external_service_parameters.each do |params_value|
+        if params_value.external_service_parameter_definition.is_displayed != 0
+          decrypt_data = params_value.external_service_parameter_definition.is_encrypted == 0 ? params_value.external_service_parameter_definition.external_service_parameter.parameter_value : crypt.decrypt_and_verify(params_value.external_service_parameter_definition.external_service_parameter.parameter_value)
+          exist_params << decrypt_data
+          input_params << params[:"#{params_value.external_service_parameter_definition.id}"]
+        end
+      end
+    end
+
+    def change(credentials, params, redirect_uri, id, session, crypt)
+      access_token = FacebookApiGateway.get_access_token(credentials, params, redirect_uri)
+      session[:"#{id}"] = access_token.token
+
+      external_service = LinkageRepository.find_external_service(session[:linkage_id])
+      external_service.external_service_parameters.each do |params_value|
+        params_value.update(
+          parameter_value: params_value.external_service_parameter_definition.is_encrypted == 0 ? session[:"#{params_value.external_service_parameter_definition.id}"] : crypt.encrypt_and_sign(session[:"#{params_value.external_service_parameter_definition.id}"])
+        )
+      end
+    end
+
+    def delete(linkage)
+      linkage.destroy
+    end
+
   end
 end

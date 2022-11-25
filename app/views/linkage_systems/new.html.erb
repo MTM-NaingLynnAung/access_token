@@ -1,3 +1,28 @@
+<% if flash[:alert] %>
+  <div class="alert alert-danger alert-dismissible fade show" role="alert">
+   <%= flash[:alert] %>
+   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<% end %>
 <h3 class="text-center">External Service Parameters</h3>
-<%= render 'form', back: linkage_systems_path, url: linkage_systems_path(definition: params[:definition]), method: :post %>
 
+<%= form_with url: linkage_systems_path(definition: params[:definition]), method: :post, local: true do |form| %>
+
+  <div class="col-3 my-3">
+    <%= form.label 'Label' %>
+    <%= form.text_field :label, class: "form-control" %>
+  </div>
+
+<% @params_definition.each do |params_definition| %>
+  <% if params_definition.is_displayed != 0 %>
+    <div class="col-3 my-3">
+      <%= form.label "#{params_definition.name}" %>
+      <%= form.text_field params_definition.id, class: "form-control" %>
+    </div>
+  <% end %>
+<% end %>
+
+<%= link_to 'Back', linkage_systems_path, class: 'btn btn-dark me-2' %>
+<%= form.submit 'Confirm', class: 'btn btn-primary' %>
+
+<% end %>

@@ -2,14 +2,14 @@
 
   <div class="col-3 my-3">
     <%= form.label 'Label' %>
-    <%= form.text_field :label, class: "form-control", value: params[:id].present? ? @external_service.linkage_system.label : '' %>
+    <%= form.text_field :label, class: "form-control" %>
   </div>
 
 <% @params_definition.each do |params_definition| %>
   <% if params_definition.is_displayed != 0 %>
     <div class="col-3 my-3">
       <%= form.label "#{params_definition.name}" %>
-      <%= form.text_field params_definition.id, class: "form-control", value: params[:id].present? ? params_definition.is_encrypted == 0 ? params_definition.external_service_parameter.parameter_value : crypt.decrypt_and_verify(params_definition.external_service_parameter.parameter_value) : '' %>
+      <%= form.text_field params_definition.id, class: "form-control" %>
     </div>
   <% end %>
 <% end %>
