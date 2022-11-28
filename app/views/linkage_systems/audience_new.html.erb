@@ -1,0 +1,11 @@
+<%= form_with url: audience_create_path(id: params[:id], definition: params[:definition]), local: true do |form| %>
+  <div class="col-3 my-3">
+    <%= form.label 'Ad Id' %>
+    <%= form.text_field :ad_id, class: 'form-control' %>
+  </div>
+  <div class="col-3 mb-3">
+    <%= form.label :name %>
+    <%= form.text_field :name, class: 'form-control' %>
+  </div>
+  <%= form.submit 'Confirm', class: 'btn btn-primary' %>
+<% end %>

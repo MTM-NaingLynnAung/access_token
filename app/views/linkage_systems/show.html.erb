@@ -1,0 +1,13 @@
+<%= link_to 'Create Custom Audience', "#{params[:id]}/audience/new?definition=#{params[:definition]}", class: 'btn btn-primary my-4 d-table' %>
+
+
+<div class="card col-5 mx-5 d-inline-block my-3">
+  <div class="card-header">
+    <%= @external_service.linkage_system.label %>
+  </div>
+  <div class="card-body">
+    <div class="col">
+      <%= link_to 'Edit', edit_linkage_system_path(@external_service.linkage_system, definition: params[:definition]), class: 'btn btn-sm btn-outline-secondary' %>
+    </div>
+  </div>
+</div>

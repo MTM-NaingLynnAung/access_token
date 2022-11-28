@@ -1,0 +1,3 @@
+class ExternalServiceAvailableReport < ApplicationRecord
+  
+end
