@@ -58,5 +58,9 @@ class LinkageService
       LinkageRepository.delete(external_service.linkage_system)
     end
 
+    def get_credentials(credentials, external_service, crypt)
+      LinkageRepository.get_credentials(credentials, external_service, crypt)
+    end
+
   end
 end

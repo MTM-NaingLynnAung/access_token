@@ -1,0 +1,14 @@
+<% if flash[:alert] %>
+  <div class="alert alert-danger alert-dismissible fade show" role="alert">
+   <%= flash[:alert] %>
+   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<% end %>
+<h4 class="my-3">Csv Upload</h4>
+<%= form_with url: audience_user_path(id: params[:id], definition: params[:definition]), local: true do |form| %>
+  <div class="col-3">
+    <%= form.file_field :file, class: 'form-control' %>
+  </div>
+  <%= form.submit 'Upload', class: 'btn btn-primary mt-3' %>
+<% end %>
+

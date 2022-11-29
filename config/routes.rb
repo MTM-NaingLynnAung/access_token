@@ -12,5 +12,10 @@ Rails.application.routes.draw do
   resources :linkage_systems
   get 'linkage_systems/:id/audience/new', to: 'linkage_systems#audience_new'
   post 'audience/create', to: 'linkage_systems#audience_create'
-  # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
+
+  get 'linkage_systems/:id/audience/edit', to: 'linkage_systems#audience_edit'
+  post 'audience/update', to: 'linkage_systems#audience_update'
+
+  get 'linkage_systems/:id/audience/user/new', to: 'linkage_systems#audience_user'
+  post 'audience/user', to: 'linkage_systems#audience_user_create'
 end

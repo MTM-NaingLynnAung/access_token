@@ -103,5 +103,15 @@ class LinkageRepository
       linkage.destroy
     end
 
+    def get_credentials(credentials, external_service, crypt)
+      external_service.external_service_parameters.each do |current_value|
+        if current_value.external_service_parameter_definition.is_encrypted == 0
+          credentials << current_value.parameter_value
+        else
+          credentials << crypt.decrypt_and_verify(current_value.parameter_value)
+        end
+      end
+    end
+
   end
 end

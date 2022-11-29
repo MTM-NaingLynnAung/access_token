@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_11_28_103613) do
+ActiveRecord::Schema.define(version: 2022_11_29_013359) do
 
   create_table "external_service_available_reports", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.integer "external_service_id", null: false
@@ -21,7 +21,7 @@ ActiveRecord::Schema.define(version: 2022_11_28_103613) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.datetime "deleted_at"
-    t.integer "custom_audience_id"
+    t.bigint "custom_audience_id"
   end
 
   create_table "external_service_definitions", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
