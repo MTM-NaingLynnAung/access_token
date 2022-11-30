@@ -94,87 +94,51 @@ class LinkageSystemsController < ApplicationController
   end
 
   def audience_create
-
+    begin
     credentials = []
     LinkageService.get_credentials(credentials, @external_service, crypt)
-    ad_account = FacebookAds::CustomAudience.get("act_#{params[:ad_id]}", { access_token: credentials[2], app_secret: credentials[1] })
-
-    puts "------------------------------Ad Account Name: #{ad_account.id}"
-    customaudiences = ad_account.customaudiences.create({
-        name: params[:name],
-        subtype: Constants::SUBTYPE,
-        description: Constants::DESCRIPTION,
-        customer_file_source: Constants::CUSTOMER_FILE_SOURCE,
-    })
-    service_report = ExternalServiceAvailableReport.create({
-      external_service_id: @external_service.id,
-      service_type: @external_service.external_service_definition_id,
-      name: params[:name],
-      identifier: params[:name],
-      fetched_at: Time.now,
-      custom_audience_id: customaudiences.id
-    })
-    render json: service_report
-    
+      service_report = LinkageService.audience_create(params, credentials, Constants::SUBTYPE, Constants::DESCRIPTION, Constants::CUSTOMER_FILE_SOURCE, @external_service)
+      render json: service_report
+    rescue => exception
+      flash[:alert] = "Something went wrong. Please try again"
+      render :audience_new
+    end
   end
 
   def audience_edit
-    
   end
 
   def audience_update
-
-    credentials = []
-    LinkageService.get_credentials(credentials, @external_service, crypt)
-    custom_audience = FacebookAds::CustomAudience.get(params[:ad_id], { access_token: credentials[2], app_secret: credentials[1] })
-    custom_audience.name = params[:name]
-    custom_audience.save
-    @audience.update(
-      name: params[:name],
-      identifier: params[:name],
-      custom_audience_id: params[:ad_id]
-    )
-    redirect_to linkage_system_path(@audience.external_service_id, definition: params[:definition]), notice: 'Audience was updated successfully'
-
+    begin
+      credentials = []
+      LinkageService.get_credentials(credentials, @external_service, crypt)
+      LinkageService.audience_update(params, credentials, @audience)
+      redirect_to linkage_system_path(@audience.external_service_id, definition: params[:definition]), notice: 'Audience was updated successfully'
+    rescue => exception
+      flash[:alert] = "Something went wrong. Please try again"
+      render :audience_edit
+    end
   end
 
   def audience_user
   end
 
   def audience_user_create
-
     if @audience.blank?
       flash[:alert] = 'Please create custom audience first'
       render :audience_user
     else
       begin
-        file = File.open(params[:file])
-        csv = CSV.read(file)
-        csv.shift
         email = []
-        csv.each do |row|
-          email << Digest::SHA256.hexdigest(row[0])
-        end
-        
         credentials = []
-        LinkageService.get_credentials(credentials, @external_service, crypt)
-
-        session_id = rand 1000000..9999999
-        session = {
-          session_id: session_id,
-          batch_seq: 1,
-          last_batch_flag: false
-        }
-        payload = {
-          schema: "EMAIL_SHA256",
-          data: email
-        }
-        custom_audience = FacebookAds::CustomAudience.get(@audience.custom_audience_id, { access_token: credentials[2], app_secret: credentials[1] })
+        custom_audience = LinkageService.audience_user_create(params[:file], email, credentials, @external_service, crypt, @audience)
+        payload = { schema: "EMAIL_SHA256", data: email }
         deleted_user = custom_audience.users.destroy(payload: payload.to_json)
         created_user = custom_audience.users.create(payload: payload.to_json)
         render json: { deleted_user: deleted_user, created_user: created_user }
       rescue => exception
         flash[:alert] = 'Something went wrong. Please try again later'
+        puts "------------------#{exception.message}"
         render :audience_user
       end
     end

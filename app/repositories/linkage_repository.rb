@@ -1,3 +1,5 @@
+require 'facebookbusiness'
+require 'csv'
 class LinkageRepository
   class << self
     def index
@@ -111,6 +113,49 @@ class LinkageRepository
           credentials << crypt.decrypt_and_verify(current_value.parameter_value)
         end
       end
+    end
+
+    def audience_create(params, credentials, subtype, description, customer_file_source, external_service)
+      ad_account = FacebookAds::AdAccount.get("act_#{params[:ad_id]}", { access_token: credentials[2], app_secret: credentials[1] })
+      customaudiences = ad_account.customaudiences.create({
+          name: params[:name],
+          subtype: subtype,
+          description: description,
+          customer_file_source: customer_file_source,
+      })
+      service_report = ExternalServiceAvailableReport.create({
+        external_service_id: external_service.id,
+        service_type: external_service.external_service_definition_id,
+        name: params[:name],
+        identifier: params[:name],
+        fetched_at: Time.now,
+        custom_audience_id: customaudiences.id
+      })
+    end
+
+    def audience_update(params, credentials, audience)
+      custom_audience = FacebookAds::CustomAudience.get(params[:ad_id], { access_token: credentials[2], app_secret: credentials[1] })
+      custom_audience.name = params[:name]
+      custom_audience.save
+      audience.update(
+        name: params[:name],
+        identifier: params[:name],
+        custom_audience_id: params[:ad_id]
+      )
+    end
+
+    def audience_user_create(file, email, credentials, external_service, crypt, audience)
+      file = File.open(file)
+      csv = CSV.read(file)
+      csv.shift
+      csv.each do |row|
+        email << Digest::SHA256.hexdigest(row[0])
+      end
+      
+      LinkageRepository.get_credentials(credentials, external_service, crypt)
+
+      custom_audience = FacebookAds::CustomAudience.get(audience.custom_audience_id, { access_token: credentials[2], app_secret: credentials[1] })
+      
     end
 
   end

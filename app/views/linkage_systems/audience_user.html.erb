@@ -5,10 +5,13 @@
   </div>
 <% end %>
 <h4 class="my-3">Csv Upload</h4>
-<%= form_with url: audience_user_path(id: params[:id], definition: params[:definition]), local: true do |form| %>
-  <div class="col-3">
+<%= form_with url: audience_user_path(id: params[:id], definition: params[:definition]), local: true, class: 'col-3' do |form| %>
+  <div>
     <%= form.file_field :file, class: 'form-control' %>
   </div>
-  <%= form.submit 'Upload', class: 'btn btn-primary mt-3' %>
+  <div class="d-flex justify-content-between mt-3">
+  <%= link_to 'Back', linkage_system_path(params[:id], definition: params[:definition]), class: 'btn btn-dark' %>
+  <%= form.submit 'Upload', class: 'btn btn-primary' %>
+  </div>
 <% end %>
 

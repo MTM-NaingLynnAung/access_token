@@ -61,6 +61,18 @@ class LinkageService
     def get_credentials(credentials, external_service, crypt)
       LinkageRepository.get_credentials(credentials, external_service, crypt)
     end
+    
+    def audience_create(params, credentials, subtype, description, customer_file_source, external_service)
+      LinkageRepository.audience_create(params, credentials, subtype, description, customer_file_source, external_service)
+    end
+
+    def audience_update(params, credentials, audience)
+      LinkageRepository.audience_update(params, credentials, audience)
+    end
+    
+    def audience_user_create(file, email, credentials, external_service, crypt, audience)
+      LinkageRepository.audience_user_create(file, email, credentials, external_service, crypt, audience)
+    end
 
   end
 end
