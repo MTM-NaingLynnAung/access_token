@@ -7,11 +7,11 @@
 <%= form_with url: url, local: true, class: 'col-3' do |form| %>
   <div class="my-3">
     <%= form.label 'Ad Id' %>
-    <%= form.text_field :ad_id, class: 'form-control', value: @audience.present? ? @audience.custom_audience_id : '' %>
+    <%= form.text_field :ad_id, class: 'form-control', value: @service_report.present? ? @service_report.custom_audience_id : '' %>
   </div>
   <div class="mb-3">
     <%= form.label :name %>
-    <%= form.text_field :name, class: 'form-control', value: @audience.present? ? @audience.name : '' %>
+    <%= form.text_field :name, class: 'form-control', value: @service_report.present? ? @service_report.name : '' %>
   </div>
   <div class="d-flex justify-content-between">
     <%= link_to 'Back', linkage_system_path(params[:id], definition: params[:definition]), class: 'btn btn-dark' %>

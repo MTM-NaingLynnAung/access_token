@@ -9,7 +9,7 @@
   </div>
 </div>
 
-<% if @audience.present? %>
+<% if @service_report.present? %>
   <%= link_to 'Custom Audience', "#{params[:id]}/audience/edit?definition=#{params[:definition]}", class: 'btn btn-primary my-4 d-table' %>
 <% else %>
   <%= link_to 'Custom Audience', "#{params[:id]}/audience/new?definition=#{params[:definition]}", class: 'btn btn-primary my-4 d-table' %>
