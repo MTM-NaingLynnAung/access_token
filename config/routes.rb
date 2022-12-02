@@ -18,4 +18,10 @@ Rails.application.routes.draw do
 
   get 'linkage_systems/:id/audience/user/new', to: 'linkage_systems#audience_user'
   post 'audience/user', to: 'linkage_systems#audience_user_create'
+
+  post '/google/create', to: 'linkage_systems#create_google'
+  put '/linkage_systems/:id/google', to: 'linkage_systems#update_google'
+
+  get '/google_store', to: 'linkage_systems#google_store'
+  get '/google_update', to: 'linkage_systems#google_update_change'
 end

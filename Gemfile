@@ -65,3 +65,7 @@ gem 'oauth2', '~> 2.0', '>= 2.0.9'
 gem 'jquery-rails'
 
 gem 'facebookbusiness', '~> 0.15.0.0'
+
+gem 'google-api-client'
+
+gem 'sinatra' 

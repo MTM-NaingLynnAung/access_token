@@ -9,10 +9,8 @@ class LinkageRepository
     def find_params_definition(definition)
       ExternalServiceParameterDefinition.where(external_service_definition_id: definition)
     end
-
-    def store(current_user, session, crypt, credentials, params, id, redirect_uri)
-      access_token = FacebookApiGateway.get_access_token(credentials, params, redirect_uri)
-      session[:"#{id}"] = access_token.token
+    
+    def store(current_user, session, crypt)
       linkage = LinkageSystem.create!(
         label: session[:label],
         created_by: current_user.id,
@@ -60,9 +58,7 @@ class LinkageRepository
       external_service.linkage_system.update(label: label)
     end
 
-    def change(credentials, params, redirect_uri, id, session, crypt)
-      access_token = FacebookApiGateway.get_access_token(credentials, params, redirect_uri)
-      session[:"#{id}"] = access_token.token
+    def change(session, crypt)
       external_service = LinkageRepository.find_external_service(session[:linkage_id])
       LinkageRepository.update_label(external_service, session[:label])
       external_service.external_service_parameters.each do |params_value|

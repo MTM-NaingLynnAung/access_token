@@ -1,6 +1,9 @@
 require 'facebookbusiness'
 require 'csv'
 require 'digest'
+
+require 'google/apis/drive_v2'
+require 'google/api_client/client_secrets'
 class LinkageSystemsController < ApplicationController
   before_action :set_params_definition, :find_external_service, :find_service_report
 
@@ -28,8 +31,8 @@ class LinkageSystemsController < ApplicationController
     credentials = []
     LinkageService.set_credentials(credentials, @params_definition, session)
     begin
-      LinkageService.store(current_user, session, crypt, credentials, params, @params_definition.last.id,
-                           Constants::REDIRECT_URL)
+      LinkageService.get_facebook_access_token(credentials, params, Constants::REDIRECT_URL, session, @params_definition.last.id)
+      LinkageService.store(current_user, session, crypt)
     rescue StandardError => e
       flash[:alert] = "#{e.code.message}. Please try again"
       redirect_to new_linkage_system_path(definition: session[:definition])
@@ -71,8 +74,8 @@ class LinkageSystemsController < ApplicationController
     credentials = []
     LinkageService.set_credentials(credentials, @params_definition, session)
     begin
-      LinkageService.change(credentials, params, Constants::UPDATE_REDIRECT_URL, @params_definition.last.id, session,
-                            crypt)
+      LinkageService.get_facebook_access_token(credentials, params, Constants::UPDATE_REDIRECT_URL, session, @params_definition.last.id)
+      LinkageService.change(session, crypt)
     rescue StandardError => e
       flash[:alert] = "#{e.code.message}. Please try again"
       redirect_to edit_linkage_system_path(id: session[:linkage_id], definition: session[:definition])
@@ -134,6 +137,65 @@ class LinkageSystemsController < ApplicationController
     end
   end
 
+  def create_google
+    if params[:label].blank? || params[:"4"].blank? || params[:"5"].blank?
+      flash[:alert] = "Something went wrong. Please try again"
+      render :new
+    else
+      LinkageService.set_nil(session, @params_definition)
+      LinkageService.set_session(@params_definition, session, params)
+      url = LinkageService.get_google_auth_code(Constants::GOOGLE_REDIRECT_URL, params[:"#{@params_definition.first.id}"])
+      redirect_to url
+    end
+  end
+  
+  def google_store
+    @params_definition = LinkageService.find_params_definition(session[:definition])
+    begin
+      credentials = []
+      LinkageService.set_credentials(credentials, @params_definition, session)
+      LinkageService.get_google_access_token(credentials, params, Constants::GOOGLE_REDIRECT_URL, session, @params_definition.last.id)
+      LinkageService.store(current_user, session, crypt)
+    rescue => exception
+      flash[:alert] = "#{exception.message}. Please try again"
+      redirect_to new_linkage_system_path(definition: session[:definition])
+    end    
+  end
+
+  def update_google
+    if params[:label].blank? || params[:"4"].blank? || params[:"5"].blank?
+      flash[:alert] = "Something went wrong. Please try again"
+      render :edit
+    else
+      LinkageService.set_nil(session, @params_definition)
+      LinkageService.set_session(@params_definition, session, params)
+      exist_params = []
+      input_params = []
+      LinkageService.update(@external_service, crypt, exist_params, input_params, params)
+      if exist_params == input_params
+        LinkageService.update_label(@external_service, params[:label])
+        redirect_to linkage_system_path(id: params[:id], definition: params[:definition]),
+                    notice: 'Linkage system updated successfully'
+      else
+        url = LinkageService.get_google_auth_code(Constants::GOOGLE_UPDATE_REDIRECT_URL, params[:"#{@params_definition.first.id}"])
+        redirect_to url
+      end
+    end
+  end
+
+  def google_update_change
+    @params_definition = LinkageService.find_params_definition(session[:definition])
+    begin
+      credentials = []
+      LinkageService.set_credentials(credentials, @params_definition, session)
+      LinkageService.get_google_access_token(credentials, params, Constants::GOOGLE_UPDATE_REDIRECT_URL, session, @params_definition.last.id)
+      LinkageService.change(session, crypt)
+    rescue StandardError => e
+      flash[:alert] = "#{e.message}. Please try again"
+      redirect_to edit_linkage_system_path(id: session[:linkage_id], definition: session[:definition])
+      end
+  end
+
   private
 
   def set_params_definition
@@ -147,4 +209,5 @@ class LinkageSystemsController < ApplicationController
   def find_service_report
     @service_report = LinkageService.find_service_report(params[:id])
   end
+
 end

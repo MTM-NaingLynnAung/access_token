@@ -6,7 +6,7 @@
 <% end %>
 <h3 class="text-center">External Service Parameters Update</h3>
 
-<%= form_with url: "/linkage_systems/#{params[:id]}?definition=#{params[:definition]}", method: :put, local: true do |form| %>
+<%= form_with url: params[:definition] == '2' ? "/linkage_systems/#{params[:id]}/google?definition=#{params[:definition]}" : "/linkage_systems/#{params[:id]}?definition=#{params[:definition]}", method: :put, local: true do |form| %>
 
   <div class="col-3 my-3">
     <%= form.label 'Label' %>

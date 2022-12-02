@@ -36,12 +36,23 @@ class LinkageService
       FacebookApiGateway.get_auth_code(id, redirect_uri, params_definition, session, params)
     end
 
-    def get_access_token(credentials, params, redirect_uri)
-      FacebookApiGateway.get_access_token(credentials, params, redirect_uri)
+    def get_google_auth_code(redirect_uri, id)
+      GoogleApiGateway.get_google_auth_code(redirect_uri, id)
     end
 
-    def store(current_user, session, crypt, credentials, params, id, redirect_uri)
-      LinkageRepository.store(current_user, session, crypt, credentials, params, id, redirect_uri)
+    def get_facebook_access_token(credentials, params, redirect_uri, session, id)
+      access_token = FacebookApiGateway.get_access_token(credentials, params, redirect_uri)
+      session[:"#{id}"] = access_token.token
+    end
+
+    def get_google_access_token(credentials, params, redirect_uri, session, id)
+      client = GoogleApiGateway.get_google_access_token(credentials, params, redirect_uri)
+      client.fetch_access_token!
+      session[:"#{id}"] = client.access_token
+    end
+
+    def store(current_user, session, crypt)
+      LinkageRepository.store(current_user, session, crypt)
     end
 
     def list(params)
@@ -64,8 +75,8 @@ class LinkageService
       LinkageRepository.update_label(external_service, label)
     end
 
-    def change(credentials, params, redirect_uri, id, session, crypt)
-      LinkageRepository.change(credentials, params, redirect_uri, id, session, crypt)
+    def change(session, crypt)
+      LinkageRepository.change(session, crypt)
     end
 
     def delete(id)
