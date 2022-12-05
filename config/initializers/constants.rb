@@ -7,4 +7,6 @@ module Constants
 
   GOOGLE_REDIRECT_URL = 'http://localhost:3000/google_store'
   GOOGLE_UPDATE_REDIRECT_URL = 'http://localhost:3000/google_update'
+
+  YAHOO_REDIRECT_URL = 'http://localhost:3000/yahoo_store'
 end

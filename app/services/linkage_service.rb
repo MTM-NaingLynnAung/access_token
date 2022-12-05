@@ -40,6 +40,10 @@ class LinkageService
       GoogleApiGateway.get_google_auth_code(redirect_uri, id)
     end
 
+    def get_yahoo_auth_code(client_id, redirect_uri)
+      YahooApiGateway.get_yahoo_auth_code(client_id, redirect_uri)
+    end
+
     def get_facebook_access_token(credentials, params, redirect_uri, session, id)
       access_token = FacebookApiGateway.get_access_token(credentials, params, redirect_uri)
       session[:"#{id}"] = access_token.token
@@ -49,6 +53,11 @@ class LinkageService
       client = GoogleApiGateway.get_google_access_token(credentials, params, redirect_uri)
       client.fetch_access_token!
       session[:"#{id}"] = client.access_token
+    end
+
+    def get_yahoo_access_token(credentials, redirect_uri, params, session)
+      response = YahooApiGateway.get_yahoo_access_token(credentials, redirect_uri, params)
+      session[:"9"] = response[:access_token]
     end
 
     def store(current_user, session, crypt)

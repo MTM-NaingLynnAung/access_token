@@ -1,6 +1,7 @@
 require 'facebookbusiness'
 require 'csv'
 require 'digest'
+require 'json'
 
 require 'google/apis/drive_v2'
 require 'google/api_client/client_secrets'
@@ -14,15 +15,20 @@ class LinkageSystemsController < ApplicationController
   def new; end
 
   def create
+    if params[:label].blank? || params[:"1"].blank? || params[:"2"].blank?
+      flash[:alert] = "Something went wrong. Please try again"
+      render :new
+    else
     LinkageService.set_nil(session, @params_definition)
     response_data = LinkageService.get_auth_code(params[:"#{@params_definition.first.id}"], Constants::REDIRECT_URL,
                                                  @params_definition, session, params)
 
-    if response_data.handled_response[:status] == :ok
-      redirect_to response_data.handled_response[:redirect_uri]
-    else
-      flash[:alert] = 'Something went wrong'
-      render :new
+      if response_data[:status] == :ok
+        redirect_to response_data[:redirect_uri]
+      else
+        flash[:alert] = 'Something went wrong'
+        render :new
+      end
     end
   end
 
@@ -149,7 +155,7 @@ class LinkageSystemsController < ApplicationController
     end
   end
   
-  def google_store
+  def store_google
     @params_definition = LinkageService.find_params_definition(session[:definition])
     begin
       credentials = []
@@ -196,7 +202,34 @@ class LinkageSystemsController < ApplicationController
       end
   end
 
+  def create_yahoo
+    if params[:label].blank? || params[:"7"].blank? || params[:"8"].blank?
+      flash[:alert] = "Something went wrong. Please try again"
+      render :new
+    else
+      LinkageService.set_nil(session, @params_definition)
+      LinkageService.set_session(@params_definition, session, params)
+      url = LinkageService.get_yahoo_auth_code(params[:"#{@params_definition.first.id}"], Constants::YAHOO_REDIRECT_URL)
+      redirect_to url
+    end
+  end
+
+  def store_yahoo
+    @params_definition = LinkageService.find_params_definition(session[:definition])
+    credentials = []
+    LinkageService.set_credentials(credentials, @params_definition, session)
+    LinkageService.get_yahoo_access_token(credentials, Constants::YAHOO_REDIRECT_URL, params, session)
+    LinkageService.store(current_user, session, crypt)
+  end
+
+
   private
+
+  def client
+    @client ||= Faraday.new do |faraday|
+      faraday.adapter :typhoeus
+    end
+  end
 
   def set_params_definition
     @params_definition = LinkageService.find_params_definition(params[:definition])

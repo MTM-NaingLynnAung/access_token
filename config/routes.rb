@@ -22,6 +22,9 @@ Rails.application.routes.draw do
   post '/google/create', to: 'linkage_systems#create_google'
   put '/linkage_systems/:id/google', to: 'linkage_systems#update_google'
 
-  get '/google_store', to: 'linkage_systems#google_store'
+  get '/google_store', to: 'linkage_systems#store_google'
   get '/google_update', to: 'linkage_systems#google_update_change'
+
+  post '/yahoo/create', to: 'linkage_systems#create_yahoo'
+  get '/yahoo_store', to: 'linkage_systems#store_yahoo'
 end
