@@ -9,7 +9,7 @@ class LinkageRepository
     def find_params_definition(definition)
       ExternalServiceParameterDefinition.where(external_service_definition_id: definition)
     end
-    
+
     def store(current_user, session, crypt)
       linkage = LinkageSystem.create!(
         label: session[:label],
@@ -44,13 +44,13 @@ class LinkageRepository
       ExternalService.find_by(linkage_system_id: id)
     end
 
-    def update(external_service, crypt, exist_params, input_params, params)
-      external_service.external_service_parameters.each do |params_value|
+    def prepare_params(build_params)
+      build_params[:external_service].external_service_parameters.each do |params_value|
         next unless params_value.external_service_parameter_definition.is_displayed != 0
 
-        decrypt_data = params_value.external_service_parameter_definition.is_encrypted == 0 ? params_value.external_service_parameter_definition.external_service_parameter.parameter_value : crypt.decrypt_and_verify(params_value.external_service_parameter_definition.external_service_parameter.parameter_value)
-        exist_params << decrypt_data
-        input_params << params[:"#{params_value.external_service_parameter_definition.id}"]
+        decrypt_data = params_value.external_service_parameter_definition.is_encrypted == 0 ? params_value.external_service_parameter_definition.external_service_parameter.parameter_value : build_params[:crypt].decrypt_and_verify(params_value.external_service_parameter_definition.external_service_parameter.parameter_value)
+        build_params[:exist_params] << decrypt_data
+        build_params[:input_params] << build_params[:params][:"#{params_value.external_service_parameter_definition.id}"]
       end
     end
 
@@ -82,20 +82,21 @@ class LinkageRepository
       end
     end
 
-    def audience_create(params, credentials, subtype, description, customer_file_source, external_service)
-      ad_account = FacebookAds::AdAccount.get("act_#{params[:ad_id]}",
-                                              { access_token: credentials[2], app_secret: credentials[1] })
+    def audience_create(build_params)
+      ad_account = FacebookAds::AdAccount.get("act_#{build_params[:params][:ad_id]}",
+                                              { access_token: build_params[:credentials][2],
+                                                app_secret: build_params[:credentials][1] })
       customaudiences = ad_account.customaudiences.create({
-                                                            name: params[:name],
-                                                            subtype: subtype,
-                                                            description: description,
-                                                            customer_file_source: customer_file_source
+                                                            name: build_params[:params][:name],
+                                                            subtype: build_params[:subtype],
+                                                            description: build_params[:description],
+                                                            customer_file_source: build_params[:customer_file_source]
                                                           })
       service_report = ExternalServiceAvailableReport.create({
-                                                               external_service_id: external_service.id,
-                                                               service_type: external_service.external_service_definition_id,
-                                                               name: params[:name],
-                                                               identifier: params[:name],
+                                                               external_service_id: build_params[:external_service].id,
+                                                               service_type: build_params[:external_service].external_service_definition_id,
+                                                               name: build_params[:params][:name],
+                                                               identifier: build_params[:params][:name],
                                                                fetched_at: Time.now,
                                                                custom_audience_id: customaudiences.id
                                                              })

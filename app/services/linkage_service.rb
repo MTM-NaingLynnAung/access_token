@@ -10,10 +10,13 @@ class LinkageService
 
     def set_nil(session, params_definition)
       session[:label] = nil
+
       params_definition.each do |params_id|
         session[:"#{params_id.id}"] = nil
       end
+
       session[:definition] = nil
+
       session[:linkage_id] = nil
     end
 
@@ -21,8 +24,11 @@ class LinkageService
       params_definition.each do |params_id|
         session[:"#{params_id.id}"] = params[:"#{params_id.id}"]
       end
+
       session[:label] = params[:label]
+
       session[:definition] = params[:definition]
+
       session[:linkage_id] = params[:id]
     end
 
@@ -32,32 +38,36 @@ class LinkageService
       end
     end
 
-    def get_auth_code(id, redirect_uri, params_definition, session, params)
-      FacebookApiGateway.get_auth_code(id, redirect_uri, params_definition, session, params)
+    def get_auth_code(build_params)
+      FacebookApiGateway.get_auth_code(build_params)
     end
 
     def get_google_auth_code(redirect_uri, id)
       GoogleApiGateway.get_google_auth_code(redirect_uri, id)
     end
 
-    def get_yahoo_auth_code(client_id, redirect_uri, params_definition, session, params)
-      YahooApiGateway.get_yahoo_auth_code(client_id, redirect_uri, params_definition, session, params)
+    def get_yahoo_auth_code(build_params)
+      YahooApiGateway.get_yahoo_auth_code(build_params)
     end
 
-    def get_facebook_access_token(credentials, params, redirect_uri, session, id)
-      access_token = FacebookApiGateway.get_access_token(credentials, params, redirect_uri)
-      session[:"#{id}"] = access_token.token
+    def get_facebook_access_token(build_params, id)
+      access_token = FacebookApiGateway.get_access_token(build_params)
+
+      build_params[:session][:"#{id}"] = access_token.token
     end
 
-    def get_google_access_token(credentials, params, redirect_uri, session, id)
-      client = GoogleApiGateway.get_google_access_token(credentials, params, redirect_uri)
+    def get_google_access_token(build_params, id)
+      client = GoogleApiGateway.get_google_access_token(build_params)
+
       client.fetch_access_token!
-      session[:"#{id}"] = client.access_token
+
+      build_params[:session][:"#{id}"] = client.access_token
     end
 
-    def get_yahoo_access_token(credentials, redirect_uri, params, session)
-      response = YahooApiGateway.get_yahoo_access_token(credentials, redirect_uri, params)
-      session[:"9"] = response[:access_token]
+    def get_yahoo_access_token(build_params)
+      response = YahooApiGateway.get_yahoo_access_token(build_params)
+
+      build_params[:session][:"9"] = response[:access_token]
     end
 
     def store(current_user, session, crypt)
@@ -76,8 +86,8 @@ class LinkageService
       LinkageRepository.find_external_service(id)
     end
 
-    def update(external_service, crypt, exist_params, input_params, params)
-      LinkageRepository.update(external_service, crypt, exist_params, input_params, params)
+    def prepare_params(build_params)
+      LinkageRepository.prepare_params(build_params)
     end
 
     def update_label(external_service, label)
@@ -90,6 +100,7 @@ class LinkageService
 
     def delete(id)
       external_service = LinkageRepository.find_external_service(id)
+
       LinkageRepository.delete(external_service.linkage_system)
     end
 
@@ -97,9 +108,8 @@ class LinkageService
       LinkageRepository.get_credentials(credentials, external_service, crypt)
     end
 
-    def audience_create(params, credentials, subtype, description, customer_file_source, external_service)
-      LinkageRepository.audience_create(params, credentials, subtype, description, customer_file_source,
-                                        external_service)
+    def audience_create(build_params)
+      LinkageRepository.audience_create(build_params)
     end
 
     def audience_update(params, credentials)

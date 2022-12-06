@@ -16,23 +16,9 @@
     <div class="d-flex justify-content-between mb-2 mx-3">
       <%= link_to 'Detail', linkage_system_path(external_service.linkage_system.id, definition: params[:definition]), class: 'btn btn-sm btn-outline-success' %>
       
-      <%= link_to 'Delete', external_service.linkage_system, method: :delete, data: { confirm: 'Are you sure to delete?' }, class: 'btn btn-sm btn-outline-danger' %>
+      <%= link_to 'Delete', linkage_system_path(external_service.linkage_system, definition: params[:definition]), method: :delete, data: { confirm: 'Are you sure to delete?' }, class: 'btn btn-sm btn-outline-danger' %>
     </div>
   </div>
 <% end %>
 
 <%= link_to 'Back to service', linkage_systems_path, class: 'btn btn-dark', style: 'display:table;' %>
-
-<%# 
-<% external_service.external_service_parameters.each do |current_value| 
-<% if current_value.external_service_parameter_definition.is_displayed != 0 
-          <div class="col">
-            <p class="form-control">
-              <strong> <%= current_value.external_service_parameter_definition.name  </strong> : 
-               current_value.external_service_parameter_definition.is_encrypted == 0 ? current_value.parameter_value : crypt.decrypt_and_verify(current_value.parameter_value)
-            </p>
-          </div>
-         end 
-<% end
-
- %>
