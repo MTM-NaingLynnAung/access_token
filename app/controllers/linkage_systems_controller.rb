@@ -39,6 +39,7 @@ class LinkageSystemsController < ApplicationController
     begin
       LinkageService.get_facebook_access_token(credentials, params, Constants::REDIRECT_URL, session, @params_definition.last.id)
       LinkageService.store(current_user, session, crypt)
+      LinkageService.set_nil(session, @params_definition)
     rescue StandardError => e
       flash[:alert] = "#{e.code.message}. Please try again"
       redirect_to new_linkage_system_path(definition: session[:definition])
@@ -82,6 +83,7 @@ class LinkageSystemsController < ApplicationController
     begin
       LinkageService.get_facebook_access_token(credentials, params, Constants::UPDATE_REDIRECT_URL, session, @params_definition.last.id)
       LinkageService.change(session, crypt)
+      LinkageService.set_nil(session, @params_definition)
     rescue StandardError => e
       flash[:alert] = "#{e.code.message}. Please try again"
       redirect_to edit_linkage_system_path(id: session[:linkage_id], definition: session[:definition])
@@ -205,12 +207,16 @@ class LinkageSystemsController < ApplicationController
   def create_yahoo
     if params[:label].blank? || params[:"7"].blank? || params[:"8"].blank?
       flash[:alert] = "Something went wrong. Please try again"
-      render :new
+      redirect_to new_linkage_system_path(definition: params[:definition])
     else
       LinkageService.set_nil(session, @params_definition)
-      LinkageService.set_session(@params_definition, session, params)
-      url = LinkageService.get_yahoo_auth_code(params[:"#{@params_definition.first.id}"], Constants::YAHOO_REDIRECT_URL)
-      redirect_to url
+      response_data = LinkageService.get_yahoo_auth_code(params[:"#{@params_definition.first.id}"], Constants::YAHOO_REDIRECT_URL, @params_definition, session, params)
+      if response_data[:status] == :ok
+        redirect_to response_data[:redirect_uri]
+      else
+        flash[:alert] = 'Something went wrong'
+        redirect_to new_linkage_system_path(definition: session[:definition])
+      end
     end
   end
 
@@ -218,8 +224,60 @@ class LinkageSystemsController < ApplicationController
     @params_definition = LinkageService.find_params_definition(session[:definition])
     credentials = []
     LinkageService.set_credentials(credentials, @params_definition, session)
-    LinkageService.get_yahoo_access_token(credentials, Constants::YAHOO_REDIRECT_URL, params, session)
-    LinkageService.store(current_user, session, crypt)
+    response = LinkageService.get_yahoo_access_token(credentials, Constants::YAHOO_REDIRECT_URL, params, session)
+    if response != nil
+      LinkageService.store(current_user, session, crypt)
+      LinkageService.set_nil(session, @params_definition)
+    else
+      flash[:alert] = 'Something went wrong. Please try again'
+      redirect_to new_linkage_system_path(definition: session[:definition])
+    end
+  end
+
+  def update_yahoo
+    if params[:label].blank? || params[:"7"].blank? || params[:"8"].blank?
+      flash[:alert] = "Something went wrong. Please try again"
+      render :edit
+    else
+      LinkageService.set_nil(session, @params_definition)
+      LinkageService.set_session(@params_definition, session, params)
+      exist_params = []
+      input_params = []
+      LinkageService.update(@external_service, crypt, exist_params, input_params, params)
+      if exist_params == input_params
+        LinkageService.update_label(@external_service, params[:label])
+        redirect_to linkage_system_path(id: params[:id], definition: params[:definition]),
+                    notice: 'Linkage system updated successfully'
+      else
+        response_data = LinkageService.get_yahoo_auth_code(params[:"#{@params_definition.first.id}"], Constants::YAHOO_UPDATE_REDIRECT_URL, @params_definition, session, params)
+        if response_data[:status] == :ok
+          redirect_to response_data[:redirect_uri]
+        else
+          flash[:alert] = 'Something went wrong . Please try again'
+          redirect_to edit_linkage_system_path(id: session[:linkage_id], definition: session[:definition])
+        end
+      end
+    end
+  end
+
+  def yahoo_update_change
+    @params_definition = LinkageService.find_params_definition(session[:definition])
+    begin
+      credentials = []
+      LinkageService.set_credentials(credentials, @params_definition, session)
+      response = LinkageService.get_yahoo_access_token(credentials, Constants::YAHOO_UPDATE_REDIRECT_URL, params, session)
+      if response != nil
+        LinkageService.change(session, crypt)
+        LinkageService.set_nil(session, @params_definition)
+      else
+        flash[:alert] = 'Something went wrong. Please try again'
+        redirect_to edit_linkage_system_path(id: session[:linkage_id], definition: session[:definition])
+      end
+      
+    rescue StandardError => e
+      flash[:alert] = "#{e.message}. Please try again"
+      redirect_to edit_linkage_system_path(id: session[:linkage_id], definition: session[:definition])
+      end
   end
 
 

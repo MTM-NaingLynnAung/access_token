@@ -7,12 +7,14 @@ class FacebookApiGateway
       response = client.get(url)
       begin
         LinkageService.set_session(params_definition, session, params)
-        response_data = { status: :ok, redirect_uri: url }
+        return response_data = { status: :unprocessable_entity } unless response.status == 302
+        response_data = { status: :ok, redirect_uri: url } 
       rescue => exception
-        response_data = { status: :unprocessable_entity, redirect_uri: nil }
+        flash[:alert] = "Something went wrong"
+      end
       rescue Faraday::ConnectionFailed => e
         puts "----------------------#{e.message}"
-      end
+      
     end
 
     def get_access_token(credentials, params, redirect_uri)

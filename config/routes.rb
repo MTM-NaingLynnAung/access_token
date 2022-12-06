@@ -27,4 +27,7 @@ Rails.application.routes.draw do
 
   post '/yahoo/create', to: 'linkage_systems#create_yahoo'
   get '/yahoo_store', to: 'linkage_systems#store_yahoo'
+
+  put '/linkage_systems/:id/yahoo', to: 'linkage_systems#update_yahoo'
+  get '/yahoo_update', to: 'linkage_systems#yahoo_update_change'
 end

@@ -40,8 +40,8 @@ class LinkageService
       GoogleApiGateway.get_google_auth_code(redirect_uri, id)
     end
 
-    def get_yahoo_auth_code(client_id, redirect_uri)
-      YahooApiGateway.get_yahoo_auth_code(client_id, redirect_uri)
+    def get_yahoo_auth_code(client_id, redirect_uri, params_definition, session, params)
+      YahooApiGateway.get_yahoo_auth_code(client_id, redirect_uri, params_definition, session, params)
     end
 
     def get_facebook_access_token(credentials, params, redirect_uri, session, id)

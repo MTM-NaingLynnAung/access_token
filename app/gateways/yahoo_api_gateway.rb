@@ -1,7 +1,18 @@
 class YahooApiGateway
   class << self
-    def get_yahoo_auth_code(client_id, redirect_uri)
+    def get_yahoo_auth_code(client_id, redirect_uri, params_definition, session, params)
       url = "https://biz-oauth.yahoo.co.jp/oauth/v1/authorize?response_type=code&client_id=#{client_id}&redirect_uri=#{redirect_uri}&scope=yahooads"
+      client.ssl.verify = false
+      response = client.get(url)
+      begin
+        LinkageService.set_session(params_definition, session, params)
+        return response_data = { status: :unprocessable_entity } unless response.status == 302
+        response_data = { status: :ok, redirect_uri: url } 
+      rescue => exception
+        flash[:alert] = "Something went wrong"
+      end
+      rescue Faraday::ConnectionFailed => e
+        puts "----------------------#{e.message}"
     end
 
     def get_yahoo_access_token(credentials, redirect_uri, params)
@@ -12,9 +23,7 @@ class YahooApiGateway
 
       client.ssl.verify = false
       response = client.get(url)
-      byebug
       begin
-
         response_body = JSON.parse(response.body)
         return { status: response.status, access_token: nil } unless response.status == 200
         { status: :ok, access_token: response_body['access_token'] }
