@@ -1,0 +1,20 @@
+<%= form_with url: url, method: :post, local: true do |form| %>
+
+  <div class="col-3 my-3">
+    <%= form.label 'Label' %>
+    <%= form.text_field :label, class: "form-control" %>
+  </div>
+
+  <% @params_definition.each do |params_definition| %>
+    <% if params_definition.is_displayed != 0 %>
+      <div class="col-3 my-3">
+        <%= form.label "#{params_definition.name}" %>
+        <%= form.text_field params_definition.id, class: "form-control" %>
+      </div>
+    <% end %>
+  <% end %>
+
+  <%= link_to 'Back', linkage_systems_path, class: 'btn btn-dark me-2' %>
+  <%= form.submit 'Confirm', class: 'btn btn-primary' %>
+
+<% end %>

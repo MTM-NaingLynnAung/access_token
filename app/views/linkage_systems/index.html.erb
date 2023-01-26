@@ -1,0 +1,15 @@
+<h2 class="my-3 text-center">External Services</h2>
+<% @linkage.each do |service_definition| %>
+  <div class="card col-5 d-inline-block mx-5 mb-5">
+  <div class="card-header">
+    <%= service_definition.name %>
+  </div>
+  <div class="card-body">
+    <p class="card-text"><%= service_definition.description %></p>
+    <div class="d-flex justify-content-between">
+      <%= link_to 'Create Linkage', new_linkage_system_path(definition: service_definition.id), class: 'btn btn-outline-primary' %>
+      <%= link_to 'Linkage List', linkage_systems_list_path(definition: service_definition.id), class: 'btn btn-outline-secondary' %>
+    </div>
+  </div>
+</div>
+<% end %>

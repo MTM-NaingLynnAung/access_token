@@ -1,8 +1,9 @@
 class ApplicationController < ActionController::Base
   before_action :authorized?
-  helper_method :current_credentials, :current_user
-  def current_credentials
-    @current_credentials ||= FacebookCredential.find(session[:credential]) if session[:credential]
+  helper_method :current_user, :crypt
+  
+  def crypt
+    crypt = ActiveSupport::MessageEncryptor.new(Rails.application.secrets.secret_key_base[0..31], Rails.application.secrets.secret_key_base)
   end
 
   def current_user

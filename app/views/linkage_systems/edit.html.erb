@@ -1,0 +1,14 @@
+<% if flash[:alert] %>
+  <div class="alert alert-danger alert-dismissible fade show" role="alert">
+   <%= flash[:alert] %>
+   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<% end %>
+<h3 class="text-center">External Service Parameters Update</h3>
+<% if params[:definition] == '1' %>
+  <%= render 'edit', url: "/linkage_systems/#{params[:id]}?definition=#{params[:definition]}" %>
+<% elsif params[:definition] == '2' %>
+  <%= render 'edit', url: "/linkage_systems/#{params[:id]}/google?definition=#{params[:definition]}" %>
+<% else %>
+  <%= render 'edit', url: "/linkage_systems/#{params[:id]}/yahoo?definition=#{params[:definition]}" %>
+<% end %>

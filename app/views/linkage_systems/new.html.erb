@@ -1,0 +1,15 @@
+<% if flash[:alert] %>
+  <div class="alert alert-danger alert-dismissible fade show" role="alert">
+   <%= flash[:alert] %>
+   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<% end %>
+<h3 class="text-center">External Service Parameters</h3>
+
+<% if params[:definition] == '1' %>
+  <%= render 'form', url: linkage_systems_path(definition: params[:definition]) %>
+<% elsif params[:definition] == '2' %>
+  <%= render 'form', url: google_create_path(definition: params[:definition]) %>
+<% else %>
+  <%= render 'form', url: yahoo_create_path(definition: params[:definition]) %>
+<% end %>

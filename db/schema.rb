@@ -10,7 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_11_22_065513) do
+ActiveRecord::Schema.define(version: 2022_11_29_013359) do
+
+  create_table "external_service_available_reports", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.integer "external_service_id", null: false
+    t.integer "service_type", null: false
+    t.string "name", null: false
+    t.string "identifier", null: false
+    t.datetime "fetched_at"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "deleted_at"
+    t.bigint "custom_audience_id"
+  end
 
   create_table "external_service_definitions", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name"
@@ -36,7 +48,7 @@ ActiveRecord::Schema.define(version: 2022_11_22_065513) do
     t.index ["external_service_definition_id"], name: "external_service_definition_id"
   end
 
-  create_table "external_service_paramters", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "external_service_parameters", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "external_service_id"
     t.bigint "external_service_parameter_definition_id"
     t.text "parameter_value"
@@ -89,8 +101,8 @@ ActiveRecord::Schema.define(version: 2022_11_22_065513) do
   end
 
   add_foreign_key "external_service_parameter_definitions", "external_service_definitions"
-  add_foreign_key "external_service_paramters", "external_service_parameter_definitions"
-  add_foreign_key "external_service_paramters", "external_services"
+  add_foreign_key "external_service_parameters", "external_service_parameter_definitions"
+  add_foreign_key "external_service_parameters", "external_services"
   add_foreign_key "external_services", "external_service_definitions"
   add_foreign_key "external_services", "linkage_systems"
 end

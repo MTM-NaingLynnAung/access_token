@@ -1,0 +1,18 @@
+<div class="card col-5 mx-5 d-inline-block my-3">
+  <div class="card-header">
+    <%= @external_service.linkage_system.label %>
+  </div>
+  <div class="card-body">
+    <div class="col">
+      <%= link_to 'Edit', edit_linkage_system_path(@external_service.linkage_system, definition: params[:definition]), class: 'btn btn-sm btn-outline-secondary' %>
+    </div>
+  </div>
+</div>
+
+<% if @service_report.present? %>
+  <%= link_to 'Custom Audience', "#{params[:id]}/audience/edit?definition=#{params[:definition]}", class: 'btn btn-primary my-4 d-table' %>
+<% else %>
+  <%= link_to 'Custom Audience', "#{params[:id]}/audience/new?definition=#{params[:definition]}", class: 'btn btn-primary my-4 d-table' %>
+<% end %>
+
+<%= link_to 'Add Custom Audience User', "#{params[:id]}/audience/user/new?definition=#{params[:definition]}", class: 'btn btn-primary my-4 d-table' %>
